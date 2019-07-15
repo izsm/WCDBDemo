@@ -1,0 +1,12 @@
+workspace 'WCDBDemo.xcworkspace'
+inhibit_all_warnings!
+
+platform :ios, '9.0'
+
+target 'WCDBDemo' do
+
+    use_frameworks!
+
+pod 'WCDB.swift'
+
+end
