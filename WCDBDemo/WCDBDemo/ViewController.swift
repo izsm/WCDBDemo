@@ -99,7 +99,7 @@ class ViewController: UIViewController {
         }
         
         if textF == textField4, let text = textF.text, let weight = Int(text) {
-            model.other?.weight = weight
+            
         }
     }
     
