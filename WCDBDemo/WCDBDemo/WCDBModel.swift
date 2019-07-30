@@ -22,3 +22,14 @@ struct WCDBModel: TableCodable {
         case sex
     }
 }
+
+struct DataModel: Codable {
+    var name: String = ""
+    var age: Int = 0
+    var sex: String = ""
+    var we: DataWeightModel = DataWeightModel()
+}
+
+struct DataWeightModel: Codable {
+    var weight: Int = 0
+}

@@ -63,7 +63,89 @@ class WCDBManager: NSObject {
         do {
             try database.drop(table: table)
         } catch {
-            debugPrint("delete object error \(error.localizedDescription)")
+            debugPrint("delete table error \(error.localizedDescription)")
         }
+    }
+    
+    func saveData<T: Codable>(object: T, table: String) {
+        let transformer = ZMTransformerFactory.forCodable(ofType: T.self)
+        do {
+            let data = try transformer.toData(object)
+            var dataModel = WCDBDataModel()
+            dataModel.data = data
+            do {
+                if try database.isTableExists(table) {
+                    update(object: dataModel, table: table)
+                } else {
+                    createTable(type: WCDBDataModel.self, table: table)
+                    try database.insert(objects: dataModel, intoTable: table)
+                }
+            } catch {
+                debugPrint("insert object error \(error.localizedDescription)")
+            }
+        } catch {
+            
+        }
+    }
+    
+    func objectData<T: Codable>(type: T.Type, table: String) -> T? {
+        guard let dataModel = object(type: WCDBDataModel.self, table: table) else { return nil }
+        do {
+            let data = dataModel.data
+            let transformer = ZMTransformerFactory.forCodable(ofType: T.self)
+            return try transformer.fromData(data)
+        } catch {
+            return nil
+        }
+    }
+}
+
+struct WCDBDataModel: TableCodable {
+    var data: Data = Data()
+    
+    enum CodingKeys: String, CodingTableKey {
+        typealias Root = WCDBDataModel
+        static let objectRelationalMapping = TableBinding(CodingKeys.self)
+        case data
+    }
+}
+
+public class ZMTransformer<T> {
+    let toData: (T) throws -> Data
+    let fromData: (Data) throws -> T
+    
+    public init(toData: @escaping (T) throws -> Data, fromData: @escaping (Data) throws -> T) {
+        self.toData = toData
+        self.fromData = fromData
+    }
+}
+
+public class ZMTransformerFactory {
+    
+    public static func forCodable<U: Codable>(ofType: U.Type) -> ZMTransformer<U> {
+        let toData: (U) throws -> Data = { object in
+            let wrapper = ZMTypeWrapper<U>(object: object)
+            let encoder = JSONEncoder()
+            return try encoder.encode(wrapper)
+        }
+        
+        let fromData: (Data) throws -> U = { data in
+            let decoder = JSONDecoder()
+            return try decoder.decode(ZMTypeWrapper<U>.self, from: data).object
+        }
+        
+        return ZMTransformer<U>(toData: toData, fromData: fromData)
+    }
+}
+
+public struct ZMTypeWrapper<T: Codable>: Codable {
+    enum CodingKeys: String, CodingKey {
+        case object
+    }
+    
+    public let object: T
+    
+    public init(object: T) {
+        self.object = object
     }
 }
