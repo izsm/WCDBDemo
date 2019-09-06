@@ -89,28 +89,29 @@ class ViewController: UIViewController {
         guard let textF = notification.object as? UITextField else { return }
         
         if textF == textField1, let text = textF.text {
-//            model.name = text
-            dataModel.name = text
+            model.name = text
+//            dataModel.name = text
         }
         
         if textF == textField2, let text = textF.text, let age = Int(text) {
-//            model.age = age
-            dataModel.age = age
+            model.age = age
+//            dataModel.age = age
         }
         
         if textF == textField3, let text = textF.text {
-//            model.sex = text
-            dataModel.sex = text
+            model.sex = text
+//            dataModel.sex = text
         }
         
         if textF == textField4, let text = textF.text, let weight = Int(text) {
-            dataModel.we.weight = weight
+//            dataModel.we.weight = weight
         }
     }
     
     @objc private func saveBtnClick() {
 //        WCDBManager.share.save(object: model, table: "WCDBTable")
-        WCDBManager.share.saveData(object: dataModel, table: "WCDBTable")
+//        WCDBManager.share.saveData(object: dataModel, table: "WCDBTable")
+        WCDBManager.share.insertOrReplaceObject(object: model, table: "WCDBTable")
     }
     
     @objc private func deleteBtnClick() {

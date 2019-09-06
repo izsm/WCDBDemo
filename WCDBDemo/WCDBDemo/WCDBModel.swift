@@ -20,6 +20,12 @@ struct WCDBModel: TableCodable {
         case name
         case age
         case sex
+        
+        static var columnConstraintBindings: [CodingKeys: ColumnConstraintBinding]? {
+            return [
+                name: ColumnConstraintBinding(isPrimary: true),
+            ]
+        }
     }
 }
 

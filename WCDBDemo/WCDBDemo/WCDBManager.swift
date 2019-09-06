@@ -42,6 +42,15 @@ class WCDBManager: NSObject {
         }
     }
     
+    func insertOrReplaceObject<T: TableCodable>(object: T, table: String) {
+        do {
+            createTable(type: T.self, table: table)
+            try database.insertOrReplace(objects: object, intoTable: table)
+        } catch {
+            debugPrint("insert object error \(error.localizedDescription)")
+        }
+    }
+    
     func update<T: TableCodable>(object: T, table: String) {
         do {
             try database.update(table: table, on: T.Properties.all, with: object)
